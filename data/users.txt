@@ -1,0 +1,7 @@
+U;ADMIN;admin;admin123;Administrateur
+U;CLIENT;client1;1234;Client Démo
+U;EMPLOYE;meca1;1234;Mécano Pro;MECANICIEN
+U;EMPLOYE;plomb1;1234;Plombier Pro;PLOMBIER
+U;EMPLOYE;elec1;1234;Électricien Pro;ELECTRICIEN
+U;EMPLOYE;Mohsen Tlili;mohsen;Mohsen Tlili;MENUISIER
+U;CLIENT;Yassino;yassino;Yassine Louati

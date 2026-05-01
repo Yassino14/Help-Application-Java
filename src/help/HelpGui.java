@@ -8,17 +8,35 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-
 public class HelpGui extends JFrame {
     private final HelpService service = new HelpService();
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
+    private static final Color APP_BG = new Color(15, 18, 25);
+    private static final Color PANEL_BG = new Color(22, 26, 35);
+    private static final Color CARD_BG = new Color(30, 35, 46);
+    private static final Color CARD_BG_2 = new Color(36, 42, 55);
+    private static final Color TEXT = new Color(240, 243, 248);
+    private static final Color MUTED = new Color(170, 178, 190);
+    private static final Color PRIMARY = new Color(70, 110, 220);
+    private static final Color PRIMARY_HOVER = new Color(90, 130, 240);
+    private static final Color DANGER = new Color(185, 64, 64);
+    private static final Color BORDER = new Color(55, 62, 75);
+
     private CardLayout mainLayout;
     private JPanel mainContainer;
+
     private CardLayout roleLayout;
     private JPanel roleContainer;
+
+    private JTabbedPane authTabs;
+
     private JTextField usernameField;
     private JPasswordField passwordField;
+
+    private JTextField registerUsernameField;
+    private JPasswordField registerPasswordField;
+    private JTextField registerNameField;
 
     private JLabel headerTitle;
     private JLabel headerSubtitle;
@@ -44,16 +62,18 @@ public class HelpGui extends JFrame {
     public HelpGui() {
         setTitle("HELP - Home Services Booking");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1200, 760);
+        setSize(1280, 820);
         setLocationRelativeTo(null);
 
         initTheme();
 
         mainLayout = new CardLayout();
         mainContainer = new JPanel(mainLayout);
+        mainContainer.setBackground(APP_BG);
         setContentPane(mainContainer);
 
         mainContainer.add(buildLoginScreen(), "LOGIN");
+
         buildDashboardScreens();
         mainContainer.add(buildDashboardContainer(), "DASHBOARD");
 
@@ -66,87 +86,91 @@ public class HelpGui extends JFrame {
         } catch (Exception ignored) {
         }
 
-        UIManager.put("Label.font", new Font("SansSerif", Font.PLAIN, 14));
-        UIManager.put("Button.font", new Font("SansSerif", Font.BOLD, 14));
-        UIManager.put("Table.font", new Font("SansSerif", Font.PLAIN, 13));
-        UIManager.put("TableHeader.font", new Font("SansSerif", Font.BOLD, 13));
-        UIManager.put("TextField.font", new Font("SansSerif", Font.PLAIN, 14));
-        UIManager.put("PasswordField.font", new Font("SansSerif", Font.PLAIN, 14));
+        Font base = new Font("SansSerif", Font.PLAIN, 14);
+        Font bold = new Font("SansSerif", Font.BOLD, 14);
+        UIManager.put("Label.font", base);
+        UIManager.put("Button.font", bold);
+        UIManager.put("TextField.font", base);
+        UIManager.put("PasswordField.font", base);
+        UIManager.put("Table.font", base);
+        UIManager.put("TableHeader.font", bold);
+        UIManager.put("TabbedPane.font", bold);
     }
 
     private JPanel buildLoginScreen() {
         JPanel root = new JPanel(new BorderLayout());
-        root.setBackground(new Color(245, 247, 250));
+        root.setBackground(APP_BG);
 
-        JPanel left = new JPanel();
-        left.setBackground(new Color(25, 35, 55));
-        left.setPreferredSize(new Dimension(420, 0));
-        left.setLayout(new GridBagLayout());
-
-        JLabel logo = new JLabel("HELP");
-        logo.setForeground(Color.WHITE);
-        logo.setFont(new Font("SansSerif", Font.BOLD, 42));
-
-        JLabel slogan = new JLabel("<html><center>Réservation d'employés<br>mécaniciens, plombiers, électriciens...</center></html>");
-        slogan.setForeground(new Color(210, 220, 235));
-        slogan.setFont(new Font("SansSerif", Font.PLAIN, 18));
+        JPanel left = new JPanel(new GridBagLayout());
+        left.setPreferredSize(new Dimension(460, 0));
+        left.setBackground(new Color(12, 15, 22));
+        left.setBorder(new EmptyBorder(40, 40, 40, 40));
 
         JPanel leftBox = new JPanel();
         leftBox.setOpaque(false);
         leftBox.setLayout(new BoxLayout(leftBox, BoxLayout.Y_AXIS));
+
+        JLabel logo = new JLabel("HELP");
+        logo.setForeground(Color.WHITE);
+        logo.setFont(new Font("SansSerif", Font.BOLD, 48));
         logo.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel slogan = new JLabel("<html><center>Réservation d'employés<br>mécaniciens, plombiers, électriciens</center></html>");
+        slogan.setForeground(new Color(215, 222, 235));
+        slogan.setFont(new Font("SansSerif", Font.PLAIN, 19));
         slogan.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel note = new JLabel("<html><center>Interface moderne, claire et rapide.</center></html>");
+        note.setForeground(MUTED);
+        note.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        note.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        leftBox.add(Box.createVerticalGlue());
         leftBox.add(logo);
-        leftBox.add(Box.createVerticalStrut(15));
+        leftBox.add(Box.createVerticalStrut(14));
         leftBox.add(slogan);
+        leftBox.add(Box.createVerticalStrut(12));
+        leftBox.add(note);
+        leftBox.add(Box.createVerticalGlue());
 
         left.add(leftBox);
 
         JPanel right = new JPanel(new GridBagLayout());
-        right.setBackground(new Color(245, 247, 250));
+        right.setBackground(APP_BG);
+        right.setBorder(new EmptyBorder(30, 30, 30, 30));
 
-        JPanel card = new JPanel();
-        card.setBackground(Color.WHITE);
-        card.setPreferredSize(new Dimension(420, 380));
+        JPanel card = new JPanel(new BorderLayout(12, 12));
+        card.setPreferredSize(new Dimension(500, 520));
+        card.setBackground(CARD_BG);
         card.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(230, 230, 230)),
-                new EmptyBorder(25, 25, 25, 25)
+                BorderFactory.createLineBorder(BORDER, 1),
+                new EmptyBorder(20, 20, 20, 20)
         ));
-        card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
 
-        JLabel title = new JLabel("Connexion");
-        title.setFont(new Font("SansSerif", Font.BOLD, 26));
-        title.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JLabel title = new JLabel("Bienvenue");
+        title.setForeground(TEXT);
+        title.setFont(new Font("SansSerif", Font.BOLD, 28));
 
-        JLabel subtitle = new JLabel("Admin, client ou employé");
-        subtitle.setForeground(new Color(100, 100, 100));
-        subtitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JLabel subtitle = new JLabel("Connexion ou création de compte client");
+        subtitle.setForeground(MUTED);
+        subtitle.setFont(new Font("SansSerif", Font.PLAIN, 14));
 
-        usernameField = new JTextField();
-        passwordField = new JPasswordField();
+        JPanel header = new JPanel();
+        header.setOpaque(false);
+        header.setLayout(new BoxLayout(header, BoxLayout.Y_AXIS));
+        header.add(title);
+        header.add(Box.createVerticalStrut(4));
+        header.add(subtitle);
 
-        JButton loginButton = new JButton("Se connecter");
-        stylePrimaryButton(loginButton);
-        loginButton.addActionListener(e -> login());
+        authTabs = new JTabbedPane();
+        authTabs.setBackground(CARD_BG);
+        authTabs.setForeground(TEXT);
 
-        JButton demoButton = new JButton("Remplir les comptes de démo");
-        styleSecondaryButton(demoButton);
-        demoButton.addActionListener(e -> {
-            usernameField.setText("admin");
-            passwordField.setText("admin123");
-        });
+        authTabs.addTab("Connexion", buildLoginTab());
+        authTabs.addTab("Créer un compte", buildRegisterTab());
 
-        card.add(title);
-        card.add(Box.createVerticalStrut(5));
-        card.add(subtitle);
-        card.add(Box.createVerticalStrut(25));
-        card.add(makeFieldBlock("Username", usernameField));
-        card.add(Box.createVerticalStrut(12));
-        card.add(makeFieldBlock("Mot de passe", passwordField));
-        card.add(Box.createVerticalStrut(20));
-        card.add(loginButton);
-        card.add(Box.createVerticalStrut(10));
-        card.add(demoButton);
+        card.add(header, BorderLayout.NORTH);
+        card.add(authTabs, BorderLayout.CENTER);
 
         right.add(card);
 
@@ -155,18 +179,107 @@ public class HelpGui extends JFrame {
         return root;
     }
 
-    private JPanel makeFieldBlock(String label, JComponent field) {
+    private JPanel buildLoginTab() {
+        JPanel tab = new JPanel();
+        tab.setBackground(CARD_BG);
+        tab.setBorder(new EmptyBorder(18, 14, 14, 14));
+        tab.setLayout(new BoxLayout(tab, BoxLayout.Y_AXIS));
+
+        usernameField = createField();
+        passwordField = new JPasswordField();
+        styleInput(passwordField);
+
+        tab.add(fieldBlock("Username", usernameField));
+        tab.add(Box.createVerticalStrut(12));
+        tab.add(fieldBlock("Mot de passe", passwordField));
+        tab.add(Box.createVerticalStrut(18));
+
+        JButton loginButton = new JButton("Se connecter");
+        stylePrimaryButton(loginButton);
+        loginButton.addActionListener(e -> login());
+
+        JButton demoButton = new JButton("Remplir avec admin");
+        styleSecondaryButton(demoButton);
+        demoButton.addActionListener(e -> {
+            usernameField.setText("admin");
+            passwordField.setText("admin123");
+        });
+
+        tab.add(loginButton);
+        tab.add(Box.createVerticalStrut(10));
+        tab.add(demoButton);
+        tab.add(Box.createVerticalStrut(10));
+
+        JLabel help = new JLabel("Comptes démo : admin/admin123, client1/1234, meca1/1234");
+        help.setForeground(MUTED);
+        help.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        tab.add(help);
+
+        return tab;
+    }
+
+    private JPanel buildRegisterTab() {
+        JPanel tab = new JPanel();
+        tab.setBackground(CARD_BG);
+        tab.setBorder(new EmptyBorder(18, 14, 14, 14));
+        tab.setLayout(new BoxLayout(tab, BoxLayout.Y_AXIS));
+
+        registerUsernameField = createField();
+        registerPasswordField = new JPasswordField();
+        registerNameField = createField();
+
+        tab.add(fieldBlock("Username", registerUsernameField));
+        tab.add(Box.createVerticalStrut(12));
+        tab.add(fieldBlock("Mot de passe", registerPasswordField));
+        tab.add(Box.createVerticalStrut(12));
+        tab.add(fieldBlock("Nom complet", registerNameField));
+        tab.add(Box.createVerticalStrut(18));
+
+        JButton registerButton = new JButton("Créer le compte client");
+        stylePrimaryButton(registerButton);
+        registerButton.addActionListener(e -> registerClient());
+
+        tab.add(registerButton);
+        tab.add(Box.createVerticalStrut(10));
+
+        JLabel note = new JLabel("Le compte créé est automatiquement un client.");
+        note.setForeground(MUTED);
+        note.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        tab.add(note);
+
+        return tab;
+    }
+
+    private JTextField createField() {
+        JTextField f = new JTextField();
+        styleInput(f);
+        return f;
+    }
+
+    private void styleInput(JTextField field) {
+        field.setBackground(CARD_BG_2);
+        field.setForeground(TEXT);
+        field.setCaretColor(TEXT);
+        field.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(BORDER, 1),
+                new EmptyBorder(10, 10, 10, 10)
+        ));
+        field.setMaximumSize(new Dimension(Integer.MAX_VALUE, 42));
+    }
+
+    private JPanel fieldBlock(String label, JComponent field) {
         JPanel block = new JPanel();
-        block.setLayout(new BoxLayout(block, BoxLayout.Y_AXIS));
         block.setOpaque(false);
+        block.setLayout(new BoxLayout(block, BoxLayout.Y_AXIS));
 
         JLabel l = new JLabel(label);
-        l.setAlignmentX(Component.LEFT_ALIGNMENT);
+        l.setForeground(TEXT);
+        l.setFont(new Font("SansSerif", Font.PLAIN, 13));
 
-        field.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+        field.setMaximumSize(new Dimension(Integer.MAX_VALUE, 42));
 
         block.add(l);
-        block.add(Box.createVerticalStrut(5));
+        block.add(Box.createVerticalStrut(6));
         block.add(field);
         return block;
     }
@@ -176,33 +289,41 @@ public class HelpGui extends JFrame {
         clientPanel = buildClientPanel();
         employeePanel = buildEmployeePanel();
     }
+
     private JPanel buildDashboardContainer() {
         JPanel root = new JPanel(new BorderLayout());
+        root.setBackground(APP_BG);
 
         JPanel topBar = new JPanel(new BorderLayout());
-        topBar.setBackground(new Color(25, 35, 55));
-
-        headerTitle = new JLabel("HELP");
-        headerTitle.setForeground(Color.WHITE);
-
-        headerSubtitle = new JLabel("Dashboard");
-        headerSubtitle.setForeground(Color.LIGHT_GRAY);
+        topBar.setBackground(new Color(12, 15, 22));
+        topBar.setBorder(new EmptyBorder(16, 22, 16, 22));
 
         JPanel titles = new JPanel();
         titles.setOpaque(false);
         titles.setLayout(new BoxLayout(titles, BoxLayout.Y_AXIS));
+
+        headerTitle = new JLabel("HELP");
+        headerTitle.setForeground(Color.WHITE);
+        headerTitle.setFont(new Font("SansSerif", Font.BOLD, 28));
+
+        headerSubtitle = new JLabel("Dashboard");
+        headerSubtitle.setForeground(MUTED);
+        headerSubtitle.setFont(new Font("SansSerif", Font.PLAIN, 14));
+
         titles.add(headerTitle);
+        titles.add(Box.createVerticalStrut(2));
         titles.add(headerSubtitle);
 
-        JButton logout = new JButton("Logout");
-        logout.addActionListener(e -> logout());
+        JButton logoutButton = new JButton("Déconnexion");
+        styleDangerButton(logoutButton);
+        logoutButton.addActionListener(e -> logout());
 
         topBar.add(titles, BorderLayout.WEST);
-        topBar.add(logout, BorderLayout.EAST);
+        topBar.add(logoutButton, BorderLayout.EAST);
 
-        // FIX
         roleLayout = new CardLayout();
         roleContainer = new JPanel(roleLayout);
+        roleContainer.setBackground(APP_BG);
 
         roleContainer.add(adminPanel, "ADMIN");
         roleContainer.add(clientPanel, "CLIENT");
@@ -210,26 +331,32 @@ public class HelpGui extends JFrame {
 
         root.add(topBar, BorderLayout.NORTH);
         root.add(roleContainer, BorderLayout.CENTER);
-
         return root;
     }
+
     private void showRolePanel() {
-        if (currentUser.getRole() == Role.ADMIN) {
-            roleLayout.show(roleContainer, "ADMIN");
-        } else if (currentUser.getRole() == Role.CLIENT) {
-            roleLayout.show(roleContainer, "CLIENT");
-        } else {
-            roleLayout.show(roleContainer, "EMPLOYE");
+        if (currentUser == null) return;
+
+        switch (currentUser.getRole()) {
+            case ADMIN:
+                roleLayout.show(roleContainer, "ADMIN");
+                break;
+            case CLIENT:
+                roleLayout.show(roleContainer, "CLIENT");
+                break;
+            case EMPLOYE:
+                roleLayout.show(roleContainer, "EMPLOYE");
+                break;
         }
     }
 
     private JPanel buildAdminPanel() {
         JPanel root = new JPanel(new BorderLayout(15, 15));
         root.setBorder(new EmptyBorder(20, 20, 20, 20));
-        root.setBackground(new Color(245, 247, 250));
+        root.setBackground(APP_BG);
 
         JLabel title = sectionTitle("Espace Administrateur");
-        JPanel top = wrapTop(title, "Gestion des utilisateurs, des employés et des réservations.");
+        JPanel top = wrapTop(title, "Gestion des utilisateurs, employés et réservations.");
 
         usersModel = new DefaultTableModel(new Object[]{"Rôle", "Username", "Nom", "Spécialité"}, 0) {
             public boolean isCellEditable(int row, int column) { return false; }
@@ -244,6 +371,8 @@ public class HelpGui extends JFrame {
         styleTable(reservationsTable);
 
         JPanel leftActions = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        leftActions.setOpaque(false);
+
         JButton refreshUsers = new JButton("Rafraîchir utilisateurs");
         styleSecondaryButton(refreshUsers);
         refreshUsers.addActionListener(e -> loadUsersTable());
@@ -261,6 +390,8 @@ public class HelpGui extends JFrame {
         leftActions.add(deleteUser);
 
         JPanel rightActions = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        rightActions.setOpaque(false);
+
         JButton refreshReservations = new JButton("Rafraîchir réservations");
         styleSecondaryButton(refreshReservations);
         refreshReservations.addActionListener(e -> loadReservationsTable());
@@ -278,6 +409,7 @@ public class HelpGui extends JFrame {
         JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, usersCard, reservationsCard);
         split.setResizeWeight(0.48);
         split.setBorder(null);
+        split.setOpaque(false);
 
         root.add(top, BorderLayout.NORTH);
         root.add(split, BorderLayout.CENTER);
@@ -287,7 +419,7 @@ public class HelpGui extends JFrame {
     private JPanel buildClientPanel() {
         JPanel root = new JPanel(new BorderLayout(15, 15));
         root.setBorder(new EmptyBorder(20, 20, 20, 20));
-        root.setBackground(new Color(245, 247, 250));
+        root.setBackground(APP_BG);
 
         JLabel title = sectionTitle("Espace Client");
         JPanel top = wrapTop(title, "Consulter les employés disponibles et réserver un service.");
@@ -305,6 +437,7 @@ public class HelpGui extends JFrame {
         styleTable(clientReservationsTable);
 
         JPanel actions = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        actions.setOpaque(false);
 
         JButton refresh = new JButton("Rafraîchir");
         styleSecondaryButton(refresh);
@@ -331,6 +464,7 @@ public class HelpGui extends JFrame {
         JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, employeesCard, reservationsCard);
         split.setResizeWeight(0.45);
         split.setBorder(null);
+        split.setOpaque(false);
 
         root.add(top, BorderLayout.NORTH);
         root.add(split, BorderLayout.CENTER);
@@ -340,7 +474,7 @@ public class HelpGui extends JFrame {
     private JPanel buildEmployeePanel() {
         JPanel root = new JPanel(new BorderLayout(15, 15));
         root.setBorder(new EmptyBorder(20, 20, 20, 20));
-        root.setBackground(new Color(245, 247, 250));
+        root.setBackground(APP_BG);
 
         JLabel title = sectionTitle("Espace Employé");
         JPanel top = wrapTop(title, "Consulter uniquement les réservations qui vous concernent.");
@@ -352,12 +486,15 @@ public class HelpGui extends JFrame {
         styleTable(employeeReservationsTable);
 
         JPanel actions = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        actions.setOpaque(false);
+
         JButton refresh = new JButton("Rafraîchir");
         styleSecondaryButton(refresh);
         refresh.addActionListener(e -> loadEmployeeReservationsTable());
         actions.add(refresh);
 
         JPanel card = cardPanel("Mes réservations", new JScrollPane(employeeReservationsTable), actions);
+
         root.add(top, BorderLayout.NORTH);
         root.add(card, BorderLayout.CENTER);
         return root;
@@ -365,37 +502,43 @@ public class HelpGui extends JFrame {
 
     private JPanel cardPanel(String title, JComponent content, JComponent actions) {
         JPanel card = new JPanel(new BorderLayout(10, 10));
-        card.setBackground(Color.WHITE);
+        card.setBackground(CARD_BG);
         card.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(225, 225, 225)),
+                BorderFactory.createLineBorder(BORDER, 1),
                 new EmptyBorder(15, 15, 15, 15)
         ));
 
         JLabel head = new JLabel(title);
         head.setFont(new Font("SansSerif", Font.BOLD, 18));
-        head.setForeground(new Color(30, 30, 30));
+        head.setForeground(TEXT);
 
         JPanel north = new JPanel(new BorderLayout());
         north.setOpaque(false);
         north.add(head, BorderLayout.WEST);
 
         if (actions != null) {
-            actions.setOpaque(false);
             north.add(actions, BorderLayout.EAST);
         }
 
         card.add(north, BorderLayout.NORTH);
         card.add(content, BorderLayout.CENTER);
+        styleScrollPane((JScrollPane) content);
         return card;
+    }
+
+    private void styleScrollPane(JScrollPane pane) {
+        pane.setBorder(BorderFactory.createLineBorder(BORDER, 1));
+        pane.getViewport().setBackground(CARD_BG);
+        pane.setBackground(CARD_BG);
     }
 
     private JPanel wrapTop(JLabel title, String subtitle) {
         JPanel top = new JPanel();
-        top.setLayout(new BoxLayout(top, BoxLayout.Y_AXIS));
         top.setOpaque(false);
+        top.setLayout(new BoxLayout(top, BoxLayout.Y_AXIS));
 
         JLabel sub = new JLabel(subtitle);
-        sub.setForeground(new Color(90, 90, 90));
+        sub.setForeground(MUTED);
         sub.setFont(new Font("SansSerif", Font.PLAIN, 14));
 
         top.add(title);
@@ -408,45 +551,81 @@ public class HelpGui extends JFrame {
     private JLabel sectionTitle(String text) {
         JLabel label = new JLabel(text);
         label.setFont(new Font("SansSerif", Font.BOLD, 24));
-        label.setForeground(new Color(25, 35, 55));
+        label.setForeground(TEXT);
         return label;
     }
 
     private void styleTable(JTable table) {
-        table.setRowHeight(28);
+        table.setRowHeight(30);
         table.setShowGrid(false);
         table.setIntercellSpacing(new Dimension(0, 0));
-        table.getTableHeader().setReorderingAllowed(false);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        table.setBackground(CARD_BG);
+        table.setForeground(TEXT);
+        table.setSelectionBackground(new Color(75, 110, 200));
+        table.setSelectionForeground(Color.WHITE);
+        table.setFillsViewportHeight(true);
+        table.setGridColor(BORDER);
+        table.setOpaque(true);
+        table.getTableHeader().setBackground(CARD_BG_2);
+        table.getTableHeader().setForeground(TEXT);
+        table.getTableHeader().setBorder(BorderFactory.createLineBorder(BORDER, 1));
+        table.getTableHeader().setReorderingAllowed(false);
     }
 
     private void stylePrimaryButton(JButton button) {
-        button.setBackground(new Color(35, 90, 180));
-        button.setForeground(Color.WHITE);
+        button.setOpaque(true);
+        button.setContentAreaFilled(true);
+        button.setBorderPainted(false);
         button.setFocusPainted(false);
+        button.setBackground(PRIMARY);
+        button.setForeground(Color.WHITE);
+        button.setFont(new Font("SansSerif", Font.BOLD, 14));
         button.setBorder(new EmptyBorder(10, 16, 10, 16));
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        button.addChangeListener(e -> {
+            ButtonModel m = button.getModel();
+            if (m.isRollover() && m.isEnabled()) {
+                button.setBackground(PRIMARY_HOVER);
+            } else {
+                button.setBackground(PRIMARY);
+            }
+            button.setForeground(Color.WHITE);
+        });
     }
 
     private void styleSecondaryButton(JButton button) {
-        button.setBackground(new Color(235, 240, 248));
-        button.setForeground(new Color(25, 35, 55));
+        button.setOpaque(true);
+        button.setContentAreaFilled(true);
+        button.setBorderPainted(false);
         button.setFocusPainted(false);
+        button.setBackground(CARD_BG_2);
+        button.setForeground(TEXT);
+        button.setFont(new Font("SansSerif", Font.BOLD, 14));
         button.setBorder(new EmptyBorder(10, 16, 10, 16));
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     }
 
     private void styleDangerButton(JButton button) {
-        button.setBackground(new Color(190, 55, 55));
-        button.setForeground(Color.WHITE);
+        button.setOpaque(true);
+        button.setContentAreaFilled(true);
+        button.setBorderPainted(false);
         button.setFocusPainted(false);
+        button.setBackground(DANGER);
+        button.setForeground(Color.WHITE);
+        button.setFont(new Font("SansSerif", Font.BOLD, 14));
         button.setBorder(new EmptyBorder(10, 16, 10, 16));
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     }
 
     private void login() {
         String u = usernameField.getText().trim();
-        String p = new String(passwordField.getPassword());
+        String p = new String(passwordField.getPassword()).trim();
+
+        if (u.isEmpty() || p.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Remplis username et mot de passe.", "Erreur", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         Utilisateur user = service.login(u, p);
         if (user == null) {
@@ -462,6 +641,30 @@ public class HelpGui extends JFrame {
         showRolePanel();
     }
 
+    private void registerClient() {
+        String u = registerUsernameField.getText().trim();
+        String p = new String(registerPasswordField.getPassword()).trim();
+        String n = registerNameField.getText().trim();
+
+        if (u.isEmpty() || p.isEmpty() || n.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Tous les champs sont obligatoires.", "Erreur", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        boolean ok = service.registerClient(u, p, n);
+        if (ok) {
+            JOptionPane.showMessageDialog(this, "Compte client créé avec succès.");
+            registerUsernameField.setText("");
+            registerPasswordField.setText("");
+            registerNameField.setText("");
+            authTabs.setSelectedIndex(0);
+            usernameField.setText(u);
+            passwordField.setText(p);
+        } else {
+            JOptionPane.showMessageDialog(this, "Username déjà utilisé ou données invalides.", "Erreur", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     private void logout() {
         currentUser = null;
         usernameField.setText("");
@@ -472,7 +675,7 @@ public class HelpGui extends JFrame {
     private void updateHeader() {
         if (currentUser == null) {
             headerTitle.setText("HELP");
-            headerSubtitle.setText("Tableau de bord");
+            headerSubtitle.setText("Dashboard");
             return;
         }
 
@@ -565,6 +768,7 @@ public class HelpGui extends JFrame {
         JComboBox<ServiceType> speciality = new JComboBox<>(ServiceType.values());
 
         JPanel panel = new JPanel(new GridLayout(0, 1, 8, 8));
+        panel.setBackground(CARD_BG);
         panel.add(new JLabel("Username"));
         panel.add(username);
         panel.add(new JLabel("Mot de passe"));
@@ -578,7 +782,7 @@ public class HelpGui extends JFrame {
         if (res == JOptionPane.OK_OPTION) {
             boolean ok = service.addEmployee(
                     username.getText().trim(),
-                    new String(password.getPassword()),
+                    new String(password.getPassword()).trim(),
                     nom.getText().trim(),
                     (ServiceType) speciality.getSelectedItem()
             );
@@ -605,11 +809,7 @@ public class HelpGui extends JFrame {
             return;
         }
 
-        int confirm = JOptionPane.showConfirmDialog(this,
-                "Supprimer l'utilisateur " + username + " ?",
-                "Confirmation",
-                JOptionPane.YES_NO_OPTION);
-
+        int confirm = JOptionPane.showConfirmDialog(this, "Supprimer l'utilisateur " + username + " ?", "Confirmation", JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {
             boolean ok = service.deleteUser(username);
             if (ok) {
@@ -630,6 +830,7 @@ public class HelpGui extends JFrame {
 
         int id = Integer.parseInt(String.valueOf(reservationsModel.getValueAt(row, 0)));
         ReservationStatus[] values = ReservationStatus.values();
+
         ReservationStatus status = (ReservationStatus) JOptionPane.showInputDialog(
                 this,
                 "Choisir le nouveau statut",
@@ -652,14 +853,13 @@ public class HelpGui extends JFrame {
     }
 
     private void createReservationDialog() {
-        if (currentUser == null || !(currentUser instanceof Client)) {
-            return;
-        }
+        if (currentUser == null || !(currentUser instanceof Client)) return;
 
         JComboBox<ServiceType> serviceType = new JComboBox<>(ServiceType.values());
         JTextField dateField = new JTextField("2026-04-16 15:00");
 
         JPanel panel = new JPanel(new GridLayout(0, 1, 8, 8));
+        panel.setBackground(CARD_BG);
         panel.add(new JLabel("Service"));
         panel.add(serviceType);
         panel.add(new JLabel("Date et heure (yyyy-MM-dd HH:mm)"));

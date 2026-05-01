@@ -57,6 +57,15 @@ public class HelpService {
         saveQuietly();
         return true;
     }
+    public boolean registerClient(String username, String password, String nom) {
+        if (username == null || password == null || nom == null) return false;
+        username = username.trim();
+        password = password.trim();
+        nom = nom.trim();
+
+        if (username.isEmpty() || password.isEmpty() || nom.isEmpty()) return false;
+        return addClient(username, password, nom);
+    }
 
     public boolean addEmployee(String username, String password, String nom, ServiceType specialite) {
         if (users.containsKey(username)) return false;

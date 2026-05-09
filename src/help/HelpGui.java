@@ -11,7 +11,7 @@ import java.util.List;
 public class HelpGui extends JFrame {
     private final HelpService service = new HelpService();
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-
+    private ImageIcon heroIcon;
     private static final Color APP_BG = new Color(15, 18, 25);
     private static final Color PANEL_BG = new Color(22, 26, 35);
     private static final Color CARD_BG = new Color(30, 35, 46);
@@ -66,7 +66,7 @@ public class HelpGui extends JFrame {
         setLocationRelativeTo(null);
 
         initTheme();
-
+        heroIcon = loadScaledIcon("/help/assets/image.png", 600, 750);
         mainLayout = new CardLayout();
         mainContainer = new JPanel(mainLayout);
         mainContainer.setBackground(APP_BG);
@@ -109,28 +109,21 @@ public class HelpGui extends JFrame {
         JPanel leftBox = new JPanel();
         leftBox.setOpaque(false);
         leftBox.setLayout(new BoxLayout(leftBox, BoxLayout.Y_AXIS));
-
-        JLabel logo = new JLabel("HELP");
-        logo.setForeground(Color.WHITE);
-        logo.setFont(new Font("SansSerif", Font.BOLD, 48));
-        logo.setAlignmentX(Component.CENTER_ALIGNMENT);
-
+        if (heroIcon != null) {
+            JLabel hero = new JLabel(heroIcon);
+            hero.setAlignmentX(Component.CENTER_ALIGNMENT);
+            leftBox.add(hero);
+            leftBox.add(Box.createVerticalStrut(18));
+        }
         JLabel slogan = new JLabel("<html><center>Réservation d'employés<br>mécaniciens, plombiers, électriciens</center></html>");
         slogan.setForeground(new Color(215, 222, 235));
         slogan.setFont(new Font("SansSerif", Font.PLAIN, 19));
         slogan.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JLabel note = new JLabel("<html><center>Interface moderne, claire et rapide.</center></html>");
-        note.setForeground(MUTED);
-        note.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        note.setAlignmentX(Component.CENTER_ALIGNMENT);
-
         leftBox.add(Box.createVerticalGlue());
-        leftBox.add(logo);
         leftBox.add(Box.createVerticalStrut(14));
         leftBox.add(slogan);
         leftBox.add(Box.createVerticalStrut(12));
-        leftBox.add(note);
         leftBox.add(Box.createVerticalGlue());
 
         left.add(leftBox);
@@ -141,7 +134,7 @@ public class HelpGui extends JFrame {
 
         JPanel card = new JPanel(new BorderLayout(12, 12));
         card.setPreferredSize(new Dimension(500, 520));
-        card.setBackground(CARD_BG);
+        card.setBackground(new Color(5, 15, 40));
         card.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(BORDER, 1),
                 new EmptyBorder(20, 20, 20, 20)
@@ -164,7 +157,8 @@ public class HelpGui extends JFrame {
 
         authTabs = new JTabbedPane();
         authTabs.setBackground(CARD_BG);
-        authTabs.setForeground(TEXT);
+
+        authTabs.setForeground(Color.BLACK);
 
         authTabs.addTab("Connexion", buildLoginTab());
         authTabs.addTab("Créer un compte", buildRegisterTab());
@@ -900,5 +894,12 @@ public class HelpGui extends JFrame {
                 JOptionPane.showMessageDialog(this, "Annulation impossible.", "Erreur", JOptionPane.ERROR_MESSAGE);
             }
         }
+    }
+    private ImageIcon loadScaledIcon(String path, int width, int height) {
+        java.net.URL url = getClass().getResource(path);
+        if (url == null) return null;
+        ImageIcon icon = new ImageIcon(url);
+        Image img = icon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
+        return new ImageIcon(img);
     }
 }
